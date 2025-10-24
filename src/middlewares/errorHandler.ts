@@ -4,3 +4,5 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   console.error(err.stack);
   res.status(500).json({ message: 'Error interno del servidor' });
 }
+
+//esta es una prueba
