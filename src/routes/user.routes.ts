@@ -1,11 +1,12 @@
 // src/routes/user.routes.ts
 import { Router } from 'express';
 import { getUsers, createUser } from '../controllers/user.controller';
-import { authMiddleware } from '../middlewares/auth';
+import { authMiddleware, requireRoles } from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/', authMiddleware, getUsers);
-router.post('/', authMiddleware, createUser);
+// Solo superadmin y admin pueden ver usuarios y crear nuevos
+router.get('/', authMiddleware, requireRoles(['superadmin', 'admin']), getUsers);
+router.post('/', authMiddleware, requireRoles(['superadmin', 'admin']), createUser);
 
 export default router;

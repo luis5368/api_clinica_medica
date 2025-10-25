@@ -1,4 +1,5 @@
-export type Role = 'superadmin' | 'admin' | 'recepcionista';
+// src/models/user.model.ts
+export type Role = 'superadmin' | 'admin' | 'recepcionista' | 'medico' | 'enfermero';
 
 export interface User {
   id: number;

@@ -1,11 +1,13 @@
+// src/middlewares/auth.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Role } from '../models/user.model';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 export interface UserPayload {
   id: number;
-  role: 'admin' | 'recepcionista' | 'superadmin'; // incluye superadmin si lo usas
+  role: Role;
 }
 
 export interface AuthRequest extends Request {
@@ -30,9 +32,9 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   }
 }
 
-export function requireRole(role: 'admin' | 'recepcionista' | 'superadmin') {
+export function requireRoles(roles: Role[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
-    if (!req.user || req.user.role !== role) {
+    if (!req.user || !roles.includes(req.user.role)) {
       res.status(403).json({ error: 'Permiso denegado' });
       return;
     }
