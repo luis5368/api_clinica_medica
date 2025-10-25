@@ -17,3 +17,5 @@ EXPOSE 4000
 
 # Comando para iniciar la API
 CMD ["ts-node-dev", "--respawn", "--transpile-only", "--files", "src/index.ts"]
+
+# Nota: Para construir y correr el contenedor, usar los siguientes comandos:
