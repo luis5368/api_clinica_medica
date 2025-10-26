@@ -8,12 +8,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 export interface UserPayload {
   id: number;
   role: Role;
+  permissions?: string[]; // permisos dinámicos desde DB
 }
 
 export interface AuthRequest extends Request {
   user?: UserPayload;
 }
 
+// Middleware para autenticar token
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction): void {
   const auth = req.headers.authorization;
   if (!auth) {
@@ -32,9 +34,21 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   }
 }
 
+// Middleware para roles estáticos
 export function requireRoles(roles: Role[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user || !roles.includes(req.user.role)) {
+      res.status(403).json({ error: 'Permiso denegado' });
+      return;
+    }
+    next();
+  };
+}
+
+// Middleware para permisos dinámicos desde DB
+export function requirePermission(permission: string) {
+  return (req: AuthRequest, res: Response, next: NextFunction): void => {
+    if (!req.user || !req.user.permissions?.includes(permission)) {
       res.status(403).json({ error: 'Permiso denegado' });
       return;
     }

@@ -21,19 +21,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       .query('SELECT * FROM users WHERE username = @username');
 
     const user = result.recordset[0];
-
     if (!user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    console.log('🔍 Usuario desde DB:', user);
-
     const isValid = await bcrypt.compare(password, user.passwordHash);
-
-    // Cambié user.password por user.passwordHash para que el log sea correcto
-    console.log('Comparando contraseñas:', password, 'vs', user.passwordHash);
-    console.log('¿Es válida?', isValid);
-
     if (!isValid) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
@@ -44,12 +36,33 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       { expiresIn: '1h' }
     );
 
+    // Redirección lógica basada en rol
+    let panelRoute = '';
+    switch (user.role) {
+      case 'superadmin':
+      case 'admin':
+        panelRoute = '/admin/panel';
+        break;
+      case 'recepcionista':
+        panelRoute = '/recepcionista/panel';
+        break;
+      case 'medico':
+        panelRoute = '/medico/panel';
+        break;
+      case 'enfermero':
+        panelRoute = '/enfermero/panel';
+        break;
+      default:
+        panelRoute = '/dashboard';
+    }
+
     return res.json({
       token,
       user: {
         id: user.id,
         username: user.username,
-        role: user.role
+        role: user.role,
+        panelRoute // ruta sugerida para frontend según rol
       }
     });
 

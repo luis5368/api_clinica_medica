@@ -2,35 +2,47 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import citaRoutes from './routes/cita.routes';
-import { errorHandler } from './middlewares/errorHandler';
+import pacienteRoutes from './routes/paciente.routes';
+import productoRoutes from './routes/producto.routes';
+//import empleadoRoutes from './routes/empleado.routes';
+//import habitacionRoutes from './routes/habitacion.routes';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import { authMiddleware } from './middlewares/auth';
+import { errorHandler } from './middlewares/errorHandler';
 
-/* se levanta el puerto para el local*/
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
+
+// Middlewares generales
 app.use(cors());
 app.use(express.json());
-/* rutas de accesso al api */
-app.use('/auth', authRoutes);
-app.use('/api', userRoutes);
-app.use('/api/users', userRoutes);
-//console.log(userRoutes, "test-to-see-result");
-app.use('/api/citas', citaRoutes);
-app.use(errorHandler);
 
+// Rutas de autenticación
+app.use('/auth', authRoutes);
+
+// Rutas protegidas por JWT
+app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/citas', authMiddleware, citaRoutes);
+app.use('/api/pacientes', authMiddleware, pacienteRoutes);
+app.use('/api/productos', authMiddleware, productoRoutes);
+//app.use('/api/empleados', authMiddleware, empleadoRoutes);
+//app.use('/api/habitaciones', authMiddleware, habitacionRoutes);
+
+// Rutas públicas
 app.get('/', (_req, res) => {
-  res.send('API de citas dentales: punto de inicio. Usa /api/citas');
+  res.send('API de clínica: punto de inicio. Usa /api/... para acceder a los módulos');
 });
 
- app.get('/whoami', authMiddleware, (req, res) => {
+// Endpoint para ver info del usuario logueado
+app.get('/whoami', authMiddleware, (req, res) => {
   res.json({ user: req.user });
 });
-//console.log(userRoutes);
 
-/* verificar cual es el puerto */
-//console.log("prueba",citaRoutes );
+// Middleware de manejo de errores
+app.use(errorHandler);
+
+// Inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor API corriendo en http://localhost:${PORT}`);
 });
