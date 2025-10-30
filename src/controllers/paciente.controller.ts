@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { poolPromise } from '../db';
 
-export const getPacientes = async (_req: Request, res: Response) => {
+export const getPacientes = async (_req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query('SELECT * FROM PACIENTE');
@@ -12,14 +12,17 @@ export const getPacientes = async (_req: Request, res: Response) => {
   }
 };
 
-export const getPacienteById = async (req: Request, res: Response) => {
+export const getPacienteById = async (req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     const result = await pool.request()
       .input('id', req.params.id)
       .query('SELECT * FROM PACIENTE WHERE ID_PACIENTE = @id');
 
-    if (result.recordset.length === 0) return res.status(404).json({ message: 'Paciente no encontrado' });
+    if (result.recordset.length === 0) {
+      res.status(404).json({ message: 'Paciente no encontrado' });
+      return;
+    }
 
     res.json(result.recordset[0]);
   } catch (err) {
@@ -28,7 +31,7 @@ export const getPacienteById = async (req: Request, res: Response) => {
   }
 };
 
-export const createPaciente = async (req: Request, res: Response) => {
+export const createPaciente = async (req: Request, res: Response): Promise<void> => {
   const { DPI, NOMBRES, APELLIDOS, FECHA_NAC, SEXO, DIRECCION, TELEFONO, EMAIL, ID_SUCURSAL } = req.body;
 
   try {
@@ -53,7 +56,7 @@ export const createPaciente = async (req: Request, res: Response) => {
   }
 };
 
-export const updatePaciente = async (req: Request, res: Response) => {
+export const updatePaciente = async (req: Request, res: Response): Promise<void> => {
   const { DPI, NOMBRES, APELLIDOS, FECHA_NAC, SEXO, DIRECCION, TELEFONO, EMAIL, ID_SUCURSAL } = req.body;
 
   try {
@@ -82,7 +85,7 @@ export const updatePaciente = async (req: Request, res: Response) => {
   }
 };
 
-export const deletePaciente = async (req: Request, res: Response) => {
+export const deletePaciente = async (req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     await pool.request()

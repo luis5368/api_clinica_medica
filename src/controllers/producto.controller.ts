@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { poolPromise } from '../db';
 
 // Obtener todos los productos
-export const getProductos = async (_req: Request, res: Response) => {
+export const getProductos = async (_req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query('SELECT * FROM PRODUCTO');
@@ -15,15 +15,17 @@ export const getProductos = async (_req: Request, res: Response) => {
 };
 
 // Obtener un producto por ID
-export const getProductoById = async (req: Request, res: Response) => {
+export const getProductoById = async (req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     const result = await pool.request()
       .input('id', req.params.id)
       .query('SELECT * FROM PRODUCTO WHERE ID_PRODUCTO=@id');
 
-    if (result.recordset.length === 0)
-      return res.status(404).json({ message: 'Producto no encontrado' });
+    if (result.recordset.length === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+      return;
+    }
 
     res.json(result.recordset[0]);
   } catch (err) {
@@ -33,7 +35,7 @@ export const getProductoById = async (req: Request, res: Response) => {
 };
 
 // Crear un nuevo producto
-export const createProducto = async (req: Request, res: Response) => {
+export const createProducto = async (req: Request, res: Response): Promise<void> => {
   const { NOMBRE, DESCRIPCION, TIPO, PRECIO_COSTO, PRECIO_VENTA, STOCK, ID_SUCURSAL } = req.body;
 
   try {
@@ -57,7 +59,7 @@ export const createProducto = async (req: Request, res: Response) => {
 };
 
 // Actualizar un producto existente
-export const updateProducto = async (req: Request, res: Response) => {
+export const updateProducto = async (req: Request, res: Response): Promise<void> => {
   const { NOMBRE, DESCRIPCION, TIPO, PRECIO_COSTO, PRECIO_VENTA, STOCK, ID_SUCURSAL } = req.body;
 
   try {
@@ -89,7 +91,7 @@ export const updateProducto = async (req: Request, res: Response) => {
 };
 
 // Eliminar un producto
-export const deleteProducto = async (req: Request, res: Response) => {
+export const deleteProducto = async (req: Request, res: Response): Promise<void> => {
   try {
     const pool = await poolPromise;
     await pool.request()

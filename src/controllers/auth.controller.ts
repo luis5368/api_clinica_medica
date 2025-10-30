@@ -7,12 +7,13 @@ import sql from 'mssql';
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 // Login
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ error: 'Faltan credenciales' });
+      res.status(400).json({ error: 'Faltan credenciales' });
+      return;
     }
 
     const pool = await poolPromise;
@@ -22,12 +23,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
     const user = result.recordset[0];
     if (!user) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+      res.status(401).json({ error: 'Credenciales inválidas' });
+      return;
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+      res.status(401).json({ error: 'Credenciales inválidas' });
+      return;
     }
 
     const token = jwt.sign(
@@ -56,13 +59,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         panelRoute = '/dashboard';
     }
 
-    return res.json({
+    res.json({
       token,
       user: {
         id: user.id,
         username: user.username,
         role: user.role,
-        panelRoute // ruta sugerida para frontend según rol
+        panelRoute
       }
     });
 
@@ -73,12 +76,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 // Registro users
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { username, password, role } = req.body;
 
     if (!username || !password || !role) {
-      return res.status(400).json({ error: 'Faltan campos' });
+      res.status(400).json({ error: 'Faltan campos' });
+      return;
     }
 
     const pool = await poolPromise;
@@ -89,7 +93,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       .query('SELECT * FROM users WHERE username = @username');
 
     if (exists.recordset.length > 0) {
-      return res.status(400).json({ error: 'Usuario ya existe' });
+      res.status(400).json({ error: 'Usuario ya existe' });
+      return;
     }
 
     // Hashear contraseña
@@ -102,7 +107,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       .input('role', sql.VarChar, role)
       .query('INSERT INTO users (username, passwordHash, role) VALUES (@username, @password, @role)');
 
-    return res.status(201).json({ message: 'Usuario registrado correctamente' });
+    res.status(201).json({ message: 'Usuario registrado correctamente' });
 
   } catch (error) {
     console.error('Register error:', error);
