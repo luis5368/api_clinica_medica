@@ -17,7 +17,7 @@ const dbConfig: sql.config = {
   database: process.env.DB_NAME!,
   options: {
     trustServerCertificate: true,
-    encrypt: false,
+    encrypt: true,
     ...(instanceName && { instanceName }),
   },
   connectionTimeout: 30000,
