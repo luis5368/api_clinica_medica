@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { corsConfig } from './config/cors';
 
 import citaRoutes from './routes/cita.routes';
 import pacienteRoutes from './routes/paciente.routes';
@@ -17,8 +18,10 @@ import { errorHandler } from './middlewares/errorHandler';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Configuración de CORS
+app.use(cors(corsConfig));
+
 // Middlewares generales
-app.use(cors());
 app.use(express.json());
 
 // Rutas públicas
