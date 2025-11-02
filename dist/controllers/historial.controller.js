@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createHistorial = exports.getHistorialById = exports.getHistoriales = void 0;
+exports.deleteHistorial = exports.createHistorial = exports.getHistorialById = exports.getHistoriales = void 0;
 const db_1 = require("../db");
 const getHistoriales = async (_req, res) => {
     try {
@@ -49,4 +49,21 @@ const createHistorial = async (req, res) => {
     }
 };
 exports.createHistorial = createHistorial;
+// DELETE historial
+const deleteHistorial = async (req, res) => {
+    try {
+        const pool = await db_1.poolPromise;
+        const result = await pool.request()
+            .input('id', req.params.id)
+            .query('DELETE FROM HISTORIAL_MEDICO WHERE ID_HISTORIAL = @id');
+        if (result.rowsAffected[0] === 0)
+            return res.status(404).json({ message: 'Historial no encontrado' });
+        res.status(200).json({ message: 'Historial eliminado' });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error eliminando historial' });
+    }
+};
+exports.deleteHistorial = deleteHistorial;
 //# sourceMappingURL=historial.controller.js.map

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const cors_2 = require("./config/cors");
 const cita_routes_1 = __importDefault(require("./routes/cita.routes"));
 const paciente_routes_1 = __importDefault(require("./routes/paciente.routes"));
 const producto_routes_1 = __importDefault(require("./routes/producto.routes"));
@@ -18,8 +19,9 @@ const auth_1 = require("./middlewares/auth");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 4000;
+// Configuración de CORS
+app.use((0, cors_1.default)(cors_2.corsConfig));
 // Middlewares generales
-app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 // Rutas públicas
 app.get('/', (_req, res) => {
