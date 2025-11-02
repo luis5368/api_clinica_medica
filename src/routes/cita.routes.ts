@@ -5,15 +5,40 @@ import { obtenerCitas, crearCita, actualizarCita, eliminarCita } from '../contro
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', (req: Request, res: Response) => obtenerCitas(req, res));
-router.post('/', (req: Request, res: Response) => crearCita(req, res));
-
-router.put('/:id', (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(actualizarCita(req, res, next)).catch(next);
+// GET todas las citas
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await obtenerCitas(req, res);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.delete('/:id', (req: Request, res: Response, next: NextFunction) => {
-  Promise.resolve(eliminarCita(req, res, next)).catch(next);
+// POST crear cita
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await crearCita(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT actualizar cita
+router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await actualizarCita(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE eliminar cita
+router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await eliminarCita(req, res, next);
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

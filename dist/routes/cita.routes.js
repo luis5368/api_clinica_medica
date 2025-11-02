@@ -5,17 +5,41 @@ const auth_1 = require("../middlewares/auth");
 const cita_controller_1 = require("../controllers/cita.controller");
 const router = (0, express_1.Router)();
 router.use(auth_1.authMiddleware);
-router.get('/', async (req, res) => {
-    await (0, cita_controller_1.obtenerCitas)(req, res);
+// GET todas las citas
+router.get('/', async (req, res, next) => {
+    try {
+        await (0, cita_controller_1.obtenerCitas)(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
 });
-router.post('/', async (req, res) => {
-    await (0, cita_controller_1.crearCita)(req, res);
+// POST crear cita
+router.post('/', async (req, res, next) => {
+    try {
+        await (0, cita_controller_1.crearCita)(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
 });
-router.put('/:id', async (req, res) => {
-    await (0, cita_controller_1.actualizarCita)(req, res);
+// PUT actualizar cita
+router.put('/:id', async (req, res, next) => {
+    try {
+        await (0, cita_controller_1.actualizarCita)(req, res, next);
+    }
+    catch (err) {
+        next(err);
+    }
 });
-router.delete('/:id', async (req, res) => {
-    await (0, cita_controller_1.eliminarCita)(req, res);
+// DELETE eliminar cita
+router.delete('/:id', async (req, res, next) => {
+    try {
+        await (0, cita_controller_1.eliminarCita)(req, res, next);
+    }
+    catch (err) {
+        next(err);
+    }
 });
 exports.default = router;
 //# sourceMappingURL=cita.routes.js.map
