@@ -29,6 +29,9 @@ app.get('/', (_req, res) => {
   res.send('✅ API de clínica corriendo. Usa /api/... para acceder a los módulos.');
 });
 
+// 🔓 Rutas públicas (sin autenticación)
+app.use('/api/productos', productoRoutes);
+
 // Rutas de autenticación
 app.use('/auth', authRoutes);
 
@@ -36,7 +39,6 @@ app.use('/auth', authRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/citas', authMiddleware, citaRoutes);
 app.use('/api/pacientes', authMiddleware, pacienteRoutes);
-app.use('/api/productos', authMiddleware, productoRoutes);
 app.use('/api/empleados', authMiddleware, empleadoRoutes);
 app.use('/api/habitaciones', authMiddleware, habitacionRoutes);
 app.use('/api/historial', authMiddleware, historialRoutes);
