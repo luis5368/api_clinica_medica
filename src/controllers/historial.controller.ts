@@ -48,3 +48,21 @@ export const createHistorial = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error creando historial médico' });
   }
 };
+
+// DELETE historial
+export const deleteHistorial = async (req: Request, res: Response) => {
+  try {
+    const pool = await poolPromise;
+    const result = await pool.request()
+      .input('id', req.params.id)
+      .query('DELETE FROM HISTORIAL_MEDICO WHERE ID_HISTORIAL = @id');
+
+    if (result.rowsAffected[0] === 0)
+      return res.status(404).json({ message: 'Historial no encontrado' });
+
+    res.status(200).json({ message: 'Historial eliminado' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error eliminando historial' });
+  }
+};
