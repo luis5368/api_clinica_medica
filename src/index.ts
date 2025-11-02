@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
 
-import{corsConfig} from './config/cors';
+
+import cors from './config/cors';
 
 import citaRoutes from './routes/cita.routes';
 import pacienteRoutes from './routes/paciente.routes';
@@ -18,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Configuración de CORS
-app.use(cors(corsConfig));
+app.use(cors);
 // Middlewares generales
 app.use(express.json());
 

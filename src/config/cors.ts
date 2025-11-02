@@ -1,19 +1,18 @@
 // src/config/cors.ts
 import { CorsOptions } from "cors";
+import cors from "cors";
 
 const allowedOrigins = [
-  "http://localhost:5173", // Vite local
-  process.env.FRONTEND_URL!, // Azure Static Web App
+  "http://localhost:5173",
+  "https://sweetmedicalstore.z1.web.core.windows.net",
+  "https://sweetmedical-cdb7dnh2dcb3g8dd.westus3-01.azurewebsites.net" // ✅ agregar tu backend
 ];
 
-export const corsConfig: CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`❌ CORS: Origin not allowed => ${origin}`));
-  },
+export const corsOptions: CorsOptions = {
+  origin: allowedOrigins,
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+export default cors(corsOptions);
